@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://eynexa.vercel.app/sitemap.xml
+Sitemap: https://eynexapharma.vercel.app/sitemap.xml
