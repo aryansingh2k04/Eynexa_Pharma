@@ -45,6 +45,16 @@ img {
     max-width: 100%;
     height: auto;
     display: block;
+    /* Prevent image dragging and saving */
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 /* Typography */
