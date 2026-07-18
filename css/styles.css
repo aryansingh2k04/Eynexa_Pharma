@@ -161,15 +161,15 @@ header.scrolled {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 80px;
+    height: 70px;
     transition: var(--transition);
     position: relative;
     z-index: 3;
 }
 
 header.scrolled .navbar {
-    /* Keep navbar height at 80px without shrinking */
-    height: 80px;
+    /* Keep navbar height at 70px without shrinking */
+    height: 70px;
 }
 
 .logo {
@@ -186,15 +186,15 @@ header.scrolled .navbar {
 }
 
 .logo-img {
-    height: 74px;
+    height: 60px;
     width: auto;
     transition: var(--transition);
     display: block;
 }
 
 header.scrolled .logo-img {
-    /* Keep logo height at 74px without shrinking */
-    height: 74px;
+    /* Keep logo height at 60px without shrinking */
+    height: 60px;
 }
 
 .nav-links {
@@ -240,8 +240,8 @@ header.scrolled .logo-img {
 
 /* Hero Section */
 .hero {
-    margin-top: 80px;
-    height: calc(100vh - 80px);
+    margin-top: 70px;
+    height: calc(100vh - 70px);
     min-height: 600px;
     display: flex;
     align-items: center;
@@ -428,7 +428,7 @@ footer {
 
 /* Header spacer — pushes page content below fixed header */
 .header-spacer {
-    height: 80px;
+    height: 70px;
 }
 
 /* Page hero banner (non-homepage) */
