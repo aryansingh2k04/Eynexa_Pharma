@@ -1,14 +1,76 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Mobile Menu Toggle
+    // Toast Notification System
+    function showToast(message, type = 'success') {
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.className = 'toast-container';
+            toastContainer.setAttribute('aria-live', 'polite');
+            document.body.appendChild(toastContainer);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        const iconClass = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
+        toast.innerHTML = `<i class="${iconClass}"></i> <span>${message}</span>`;
+
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('toast-out');
+            toast.addEventListener('animationend', () => {
+                toast.remove();
+            });
+        }, 4000);
+    }
+
+    // Floating Back to Top Button
+    const backToTopBtn = document.createElement('button');
+    backToTopBtn.className = 'back-to-top';
+    backToTopBtn.setAttribute('aria-label', 'Back to top');
+    backToTopBtn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+    document.body.appendChild(backToTopBtn);
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopBtn.classList.add('is-visible');
+        } else {
+            backToTopBtn.classList.remove('is-visible');
+        }
+    });
+
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    // Mobile Menu Toggle & Accessibility
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navLinks = document.querySelector('.nav-links');
 
     if (mobileMenuBtn && navLinks) {
-        mobileMenuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
+        mobileMenuBtn.setAttribute('aria-label', 'Toggle navigation menu');
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+
+        const closeMobileMenu = () => {
+            navLinks.classList.remove('active');
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
             const icon = mobileMenuBtn.querySelector('i');
             if (icon) {
-                if (navLinks.classList.contains('active')) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        };
+
+        mobileMenuBtn.addEventListener('click', () => {
+            const isActive = navLinks.classList.toggle('active');
+            mobileMenuBtn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+            const icon = mobileMenuBtn.querySelector('i');
+            if (icon) {
+                if (isActive) {
                     icon.classList.remove('fa-bars');
                     icon.classList.add('fa-times');
                 } else {
@@ -16,6 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     icon.classList.add('fa-bars');
                 }
             }
+        });
+
+        // Auto close drawer when clicking links
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
         });
     }
 
@@ -369,6 +436,14 @@ document.addEventListener('DOMContentLoaded', () => {
         contactForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
+            const submitBtn = contactForm.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn ? submitBtn.innerHTML : 'Submit Inquiry';
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+            }
+
             // Inject the user's name dynamically into the hidden email subject
             const userName = document.getElementById('name').value;
             const hiddenSubject = contactForm.querySelector('input[name="subject"]');
@@ -376,19 +451,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 hiddenSubject.value = `New Inquiry from ${userName} - Eynexa Pharma`;
             }
 
-            const formData = new FormData(contactForm);
-            const response = await fetch('https://api.web3forms.com/submit', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
+            try {
+                const formData = new FormData(contactForm);
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
 
-            if (result.success) {
-                alert('Inquiry submitted successfully!');
-                contactForm.reset();
-            } else {
-                alert('Something went wrong!');
-                console.log(result);
+                if (result.success) {
+                    showToast('Inquiry submitted successfully! We will get back to you shortly.', 'success');
+                    contactForm.reset();
+                } else {
+                    showToast('Something went wrong. Please try again or email us directly.', 'error');
+                    console.log(result);
+                }
+            } catch (err) {
+                showToast('Unable to submit inquiry. Please check your internet connection.', 'error');
+                console.error(err);
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                }
             }
         });
     }
